@@ -1,0 +1,3 @@
+## 2024-05-09 - Costly list operations in search tree evaluations
+**Learning:** In AI search algorithms like Minimax and Alpha-Beta pruning, evaluation functions (e.g. `winner()`) are called at every node in the game tree, which can be millions of times. Dynamically allocating lists using operations like `.extend()` and list comprehensions in these hot paths creates immense overhead due to garbage collection and memory allocation, dominating runtime.
+**Action:** When optimizing tree search algorithms, carefully inspect the leaf evaluation and move generation functions. Replace dynamic memory allocation (like building lists) with direct constant-time operations (like index lookups) wherever possible.
