@@ -1,6 +1,16 @@
 from heapq import heappush, heappop
 
 def solve_8_puzzle(start, goal):
+    # Precompute goal positions for O(1) lookup in heuristic calculation.
+    # This optimizes the nested loops in the original heuristic calculation,
+    # dropping complexity per heuristic call.
+    goal_pos = {val: (gi, gj) for gi, grow in enumerate(goal) for gj, val in enumerate(grow) if val != 0}
+
+    def heuristic(state):
+        return sum(abs(i - goal_pos[val][0]) + abs(j - goal_pos[val][1])
+                   for i, row in enumerate(state)
+                   for j, val in enumerate(row) if val != 0)
+
     open_list = []
     heappush(open_list, (0, start, []))
     closed_list = set()
@@ -12,9 +22,10 @@ def solve_8_puzzle(start, goal):
         if current == goal:
             return path
         
-        if tuple(map(tuple, current)) in closed_list:
+        state_tuple = tuple(tuple(row) for row in current)
+        if state_tuple in closed_list:
             continue
-        closed_list.add(tuple(map(tuple, current)))
+        closed_list.add(state_tuple)
         
         zero_pos = next((i, j) for i, row in enumerate(current) for j, val in enumerate(row) if val == 0)
         
@@ -24,17 +35,12 @@ def solve_8_puzzle(start, goal):
                 new_state = [row[:] for row in current]
                 new_state[zero_pos[0]][zero_pos[1]] = new_state[new_i][new_j]
                 new_state[new_i][new_j] = 0
-                if tuple(map(tuple, new_state)) not in closed_list:
-                    cost = len(path) + 1 + heuristic(new_state, goal)
+
+                new_state_tuple = tuple(tuple(row) for row in new_state)
+                if new_state_tuple not in closed_list:
+                    cost = len(path) + 1 + heuristic(new_state)
                     heappush(open_list, (cost, new_state, path + [name]))
     return None
-
-def heuristic(state, goal):
-    return sum(abs(i - gi) + abs(j - gj) 
-               for i, row in enumerate(state) 
-               for j, val in enumerate(row) 
-               for gi, grow in enumerate(goal) 
-               for gj, gval in enumerate(grow) if val == gval and val != 0)
 
 # Example usage:
 start = [[1, 2, 3], [4, 0, 6], [7, 5, 8]]
