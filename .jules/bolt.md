@@ -1,0 +1,3 @@
+## 2024-06-25 - Avoid array copying and list comprehensions in core Game Loops
+**Learning:** High frequency core game functions like `winner(board)` and `game_over(board)` in Min-Max / Alpha-Beta scripts run repeatedly at every node evaluated (10^5+ times). List comprehensions and extending lists internally result in constant heavy array reallocation bottlenecking Python execution speeds.
+**Action:** When working on node evaluation algorithms or tight recursive game loops, always favor direct 2D-array index lookups and `any`/`all` generators over allocating lists to check combinations. Early returns in loops yield massively more efficient code here.
