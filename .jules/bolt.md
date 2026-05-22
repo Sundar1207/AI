@@ -1,0 +1,3 @@
+## 2024-06-25 - O(1) Precomputed Goal Positions for Heuristic Search
+**Learning:** Pre-computing goal positions in A* and passing them to an inner heuristic function converts a double-nested inner loop that iterates through both state and goal arrays into an O(1) dictionary lookup per cell. The cost calculation initialization in A* must also use `h(start)` rather than `0` to correctly sort the queue from the very first node.
+**Action:** When working on heuristic calculations (e.g., Manhattan distance) for searching structures with static goals, always pre-calculate the goal mapping before entering the A* loop and properly start the heuristic calculation in the open list.
