@@ -1,0 +1,3 @@
+## 2024-05-23 - [Optimization: O(1) heuristic lookups for coordinate-based goals]
+**Learning:** When calculating coordinate-based heuristics (like Manhattan distance) for grid search problems like A*, replacing the O(N^2) dynamic goal search per state evaluation with an O(1) lookup dictionary (mapping value -> goal coordinate) dramatically reduces execution time.
+**Action:** When implementing or refactoring A* search in Python, immediately check if the goal coordinates are static. If so, initialize a lookup dictionary and pass it to the heuristic function. Also ensure the priority queue initializes the start state with its calculated heuristic value `f = g + h` instead of `0`.
