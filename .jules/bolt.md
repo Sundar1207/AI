@@ -1,0 +1,3 @@
+## 2024-05-24 - A* Search Initialization and Heuristic Optimization
+**Learning:** In A* search implementations like `8 puzzle problem.py`, it's common to accidentally initialize the `open_list` priority queue with an initial cost of 0 `heappush(open_list, (0, start, []))` instead of the actual heuristic cost `h(start)`. Additionally, calculating Manhattan distances dynamically against a static goal state forces an O(N^2) inner loop per node evaluated.
+**Action:** When optimizing search algorithms, ensure the priority queue's starting state correctly includes its heuristic value to properly order the first expansion. For coordinate-based heuristics against static goals, pre-calculate goal positions into a dictionary for O(1) lookups.
