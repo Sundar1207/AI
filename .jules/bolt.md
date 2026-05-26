@@ -1,0 +1,3 @@
+## 2024-05-26 - O(1) Pre-calculated lookups for A* heuristics
+**Learning:** In A* pathfinding (like 8-puzzle), the heuristic function is called extensively. A common anti-pattern is using nested loops to search for goal coordinates within the goal state during every heuristic evaluation (O(N^2)). This causes severe bottlenecks because the goal state is static throughout the entire search.
+**Action:** When working on heuristic calculations where the goal state is static, always pre-calculate the goal coordinates into a dictionary mapping values to `(row, col)` tuples. Pass this dictionary into the heuristic function to replace inner search loops with O(1) hash map lookups.
