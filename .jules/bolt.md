@@ -1,0 +1,3 @@
+## 2024-05-24 - Pre-calculation of static states for O(N^2) heuristics
+**Learning:** For A* search heuristic implementations, checking nested arrays dynamically every step can be incredibly costly. Coordinate-based heuristics (like Manhattan distance) where the goal state is static can be heavily optimized by pre-calculating the goal positions into a dictionary. This replaces O(N^2) inner search loops with O(1) lookups.
+**Action:** When working on coordinate-based search algorithms with static goal states, always look for opportunities to pre-calculate the goal positions into a hash map before the main loop begins.
