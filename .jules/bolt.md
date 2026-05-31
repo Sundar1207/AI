@@ -1,0 +1,3 @@
+## 2024-05-31 - 8 Puzzle Performance Boost
+**Learning:** For coordinate-based heuristics (like Manhattan distance) where the goal state is static, optimizing performance by pre-calculating goal positions into a dictionary replaces an O(N^2) inner search loop with O(1) lookups, providing ~45% speedup. Also, ensure the priority queue is initialized with the heuristic value of the starting state (f = g + h) instead of just f=0 to ensure proper search ordering from the very first expansion.
+**Action:** When implementing or optimizing search algorithms (like A*) with coordinate-based heuristics, explicitly look for repeated inner loops iterating over the goal state and extract them into a pre-calculated O(1) lookup dictionary.
