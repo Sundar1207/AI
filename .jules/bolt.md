@@ -1,0 +1,3 @@
+## 2025-06-02 - Pre-calculating Goal Positions for Coordinate-Based Heuristics
+**Learning:** For A* search variants like the 8-puzzle where the goal state is static and the heuristic (e.g., Manhattan distance) evaluates coordinates for values, checking values via nested loops during every search node expansion causes extreme performance overhead (O(N^2) inner loops).
+**Action:** Always pre-calculate the goal configuration into a coordinate mapping dictionary (`{value: (x, y)}`) at the start of the search algorithm. This turns N^2 looping into O(1) dictionary lookups, vastly accelerating state evaluation and speeding up graph-based search algorithms. Ensure that when starting A*, the first node placed on the open list initializes with `f = g + h` rather than `f = 0`.
