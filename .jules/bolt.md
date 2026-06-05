@@ -1,0 +1,3 @@
+## 2024-06-05 - Tic-Tac-Toe Winner Evaluation Performance
+**Learning:** The default `winner(board)` implementation in `Alpha Beta.py` and `Min Max.py` uses list concatenation, nested list comprehensions, and iteration to check for Tic-Tac-Toe wins. This scales incredibly poorly because the function is called thousands of times recursively. Hardcoding the win conditions (rows, columns, diagonals) improves performance dramatically.
+**Action:** For static grid evaluations (like 3x3 Tic-Tac-Toe) in highly recursive algorithms, directly index checking is far superior to generalized array manipulations (list comprehensions) or mapping. Optimize inner loop/frequently called heuristic functions.
