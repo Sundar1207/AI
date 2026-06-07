@@ -1,0 +1,3 @@
+## 2024-06-07 - O(N^2) Inner Loop Bottleneck in Priority Queue Initializer
+**Learning:** For coordinate-based heuristics (like Manhattan distance) where the goal state is static, calculating the heuristic dynamically requires an O(N^2) inner search loop, which causes immense overhead in highly recursive algorithms like A* search, especially during initial states expansion.
+**Action:** When working on coordinate-based algorithms or games, pre-calculate goal positions into a dictionary lookup (O(1)) and initialize the starting state priority queue with its exact heuristic value (f = g + h) rather than just a base value.
