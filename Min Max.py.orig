@@ -3,8 +3,6 @@ def game_over(board):
 
 
 def winner(board):
-    # ⚡ Bolt Optimization: Using direct index checking instead of dynamic list allocation
-    # This reduces memory overhead from O(N) to O(1) per evaluation, cutting run time by ~75%
     # Rows
     for r in range(3):
         if board[r][0] == board[r][1] == board[r][2] != ' ':
