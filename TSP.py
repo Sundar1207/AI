@@ -1,29 +1,50 @@
 from itertools import permutations
 
+
 def traveling_salesman(graph, start):
     nodes = list(graph.keys())
     nodes.remove(start)
+
+    # Handle empty iterator edge case (1-node graph)
+    if not nodes:
+        return [start, start], graph[start][start]
+
     min_path = None
     min_cost = float('inf')
-    
+
     for perm in permutations(nodes):
-        current_cost = 0
-        current_path = [start] + list(perm) + [start]
-        
-        for i in range(len(current_path) - 1):
-            current_cost += graph[current_path[i]][current_path[i+1]]
-        
+        current_cost = graph[start][perm[0]]
+
+        # Early pruning: if leaving start node exceeds min_cost
+        if current_cost >= min_cost:
+            continue
+
+        valid = True
+        for i in range(len(perm) - 1):
+            current_cost += graph[perm[i]][perm[i+1]]
+            # Early pruning inside the path
+            if current_cost >= min_cost:
+                valid = False
+                break
+
+        if not valid:
+            continue
+
+        current_cost += graph[perm[-1]][start]
+
         if current_cost < min_cost:
             min_cost = current_cost
-            min_path = current_path
-    
+            min_path = [start] + list(perm) + [start]
+
     return min_path, min_cost
 
-# Example usage:
-graph = {
-    'A': {'A': 0, 'B': 10, 'C': 15, 'D': 20},
-    'B': {'A': 10, 'B': 0, 'C': 35, 'D': 25},
-    'C': {'A': 15, 'B': 35, 'C': 0, 'D': 30},
-    'D': {'A': 20, 'B': 25, 'C': 30, 'D': 0}
-}
-print(traveling_salesman(graph, 'A'))
+
+if __name__ == '__main__':
+    # Example usage:
+    graph = {
+        'A': {'A': 0, 'B': 10, 'C': 15, 'D': 20},
+        'B': {'A': 10, 'B': 0, 'C': 35, 'D': 25},
+        'C': {'A': 15, 'B': 35, 'C': 0, 'D': 30},
+        'D': {'A': 20, 'B': 25, 'C': 30, 'D': 0}
+    }
+    print(traveling_salesman(graph, 'A'))
