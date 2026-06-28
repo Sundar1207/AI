@@ -1,21 +1,33 @@
 def game_over(board):
-    return winner(board) is not None or all(cell != ' ' for row in board for cell in row)
+    # ⚡ Bolt Optimization: Replace generator expressions and `all()` with explicit nested loops.
+    # This prevents creating temporary generator objects in the hot path.
+    if winner(board) is not None:
+        return True
+    for row in board:
+        for cell in row:
+            if cell == ' ':
+                return False
+    return True
+
 
 def winner(board):
-    lines = []
-
+    # ⚡ Bolt Optimization: Hardcode array indices instead of using dynamic list comprehensions.
+    # This completely eliminates list allocation overhead during recursive tree expansion.
     # Rows
-    lines.extend(board)
+    for i in range(3):
+        if board[i][0] != ' ' and board[i][0] == board[i][1] == board[i][2]:
+            return board[i][0]
     # Columns
-    lines.extend([[board[r][c] for r in range(3)] for c in range(3)])
+    for j in range(3):
+        if board[0][j] != ' ' and board[0][j] == board[1][j] == board[2][j]:
+            return board[0][j]
     # Diagonals
-    lines.append([board[i][i] for i in range(3)])
-    lines.append([board[i][2 - i] for i in range(3)])
-
-    for line in lines:
-        if line[0] != ' ' and all(cell == line[0] for cell in line):
-            return line[0]
+    if board[0][0] != ' ' and board[0][0] == board[1][1] == board[2][2]:
+        return board[0][0]
+    if board[0][2] != ' ' and board[0][2] == board[1][1] == board[2][0]:
+        return board[0][2]
     return None
+
 
 def evaluate(board):
     w = winner(board)
@@ -25,6 +37,7 @@ def evaluate(board):
         return -1  # Minimizing player wins
     else:
         return 0   # Draw or game not finished
+
 
 def get_children(board, maximizing_player):
     children = []
@@ -38,10 +51,11 @@ def get_children(board, maximizing_player):
                 children.append(new_board)
     return children
 
+
 def alphabeta(position, depth, alpha, beta, maximizing_player):
     if depth == 0 or game_over(position):
         return evaluate(position)
-    
+
     if maximizing_player:
         max_eval = float('-inf')
         for child in get_children(position, True):
@@ -60,6 +74,7 @@ def alphabeta(position, depth, alpha, beta, maximizing_player):
             if beta <= alpha:
                 break  # Alpha cutoff
         return min_eval
+
 
 # Example usage
 initial_board = [
