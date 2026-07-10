@@ -1,0 +1,18 @@
+Best evaluation score for X (maximizing player): 0
+         135788 function calls (117492 primitive calls) in 0.143 seconds
+
+   Ordered by: internal time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+  18297/1    0.038    0.000    0.142    0.142 test_opt.py:47(alphabeta)
+    10967    0.038    0.000    0.044    0.000 test_opt.py:35(get_children)
+    22351    0.031    0.000    0.031    0.000 test_opt.py:10(winner)
+    15021    0.010    0.000    0.033    0.000 test_opt.py:1(game_over)
+    19792    0.008    0.000    0.008    0.000 {built-in method builtins.max}
+    16800    0.007    0.000    0.007    0.000 {built-in method builtins.min}
+    25226    0.006    0.000    0.006    0.000 {method 'append' of 'list' objects}
+     7330    0.003    0.000    0.012    0.000 test_opt.py:26(evaluate)
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+        1    0.000    0.000    0.142    0.142 test_opt.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.print}
+        1    0.000    0.000    0.143    0.143 {built-in method builtins.exec}
