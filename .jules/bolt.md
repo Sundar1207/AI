@@ -1,3 +1,9 @@
 ## 2024-05-18 - Avoid Generalized List Comprehensions in Tic-Tac-Toe Minimax Heuristics
 **Learning:** For static grid evaluations (like 3x3 Tic-Tac-Toe) in highly recursive algorithms, generating lines dynamically using list comprehensions (`[[board[r][c] for r in range(3)] for c in range(3)]`) in leaf-node heuristics results in massive object allocation overhead and slows down search trees. Profiling showed `winner` taking >50% of runtime due to list allocations in `Min Max.py`.
 **Action:** Replace dynamic line generation and generalized `all()` checks with hardcoded array index comparisons. A simple O(1) manual comparison per line (`board[0][0] == board[1][1] == board[2][2]`) provides a ~3.7x speedup for the full Minimax pass.
+## 2024-05-19 - Replace list copying with in-place backtracking in tree searches
+**Learning:** In highly recursive tree searches (like Minimax and Alpha-Beta), avoiding full copies of state arrays for each child state provides massive speedups and reduces memory allocation overhead. By replacing `get_children` (which copied the board) with an in-place backtracking mechanism inside the `alphabeta` algorithm, and using an early return, we eliminated garbage collection pressure and sped up the tree traversal.
+**Action:** Always prefer in-place state modification (backtracking) within recursive loops in depth-first algorithms over generating and copying state arrays, as it significantly cuts down on execution time.
+## 2024-05-19 - Remove unused functions during optimization passes
+**Learning:** When refactoring functions to inline their logic for performance (e.g., pulling `evaluate` directly into the `alphabeta` algorithm), ensure that the original standalone function is completely removed if it is no longer referenced anywhere else in the codebase to prevent dead code accumulation.
+**Action:** Always run a quick text search (`grep`) for a function name before deleting it, and if it's dead, remove it.
