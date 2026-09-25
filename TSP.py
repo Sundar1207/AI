@@ -1,23 +1,49 @@
 from itertools import permutations
 
+
 def traveling_salesman(graph, start):
     nodes = list(graph.keys())
     nodes.remove(start)
+
+    # Handle 1-node edge case properly
+    if not nodes:
+        return [start, start], graph.get(start, {}).get(start, 0)
+
     min_path = None
     min_cost = float('inf')
-    
+
+    # Check if all weights are non-negative to safely apply branch and bound pruning
+    can_prune = True
+    for u in graph:
+        for v in graph[u]:
+            if graph[u][v] < 0:
+                can_prune = False
+                break
+        if not can_prune:
+            break
+
     for perm in permutations(nodes):
-        current_cost = 0
-        current_path = [start] + list(perm) + [start]
-        
-        for i in range(len(current_path) - 1):
-            current_cost += graph[current_path[i]][current_path[i+1]]
-        
-        if current_cost < min_cost:
-            min_cost = current_cost
-            min_path = current_path
-    
+        # Calculate initial cost to first permutation node
+        current_cost = graph[start][perm[0]]
+
+        # Early pruning: break out if cost already exceeds minimum
+        if can_prune and current_cost >= min_cost:
+            continue
+
+        for i in range(len(perm) - 1):
+            current_cost += graph[perm[i]][perm[i+1]]
+            if can_prune and current_cost >= min_cost:
+                break
+        else:
+            # If the loop didn't break, add the cost of returning to start
+            current_cost += graph[perm[-1]][start]
+            if current_cost < min_cost:
+                min_cost = current_cost
+                # Defer explicit path list construction until a new minimum is actually found
+                min_path = [start] + list(perm) + [start]
+
     return min_path, min_cost
+
 
 # Example usage:
 graph = {
