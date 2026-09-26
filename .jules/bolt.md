@@ -1,3 +1,7 @@
 ## 2024-05-18 - Avoid Generalized List Comprehensions in Tic-Tac-Toe Minimax Heuristics
 **Learning:** For static grid evaluations (like 3x3 Tic-Tac-Toe) in highly recursive algorithms, generating lines dynamically using list comprehensions (`[[board[r][c] for r in range(3)] for c in range(3)]`) in leaf-node heuristics results in massive object allocation overhead and slows down search trees. Profiling showed `winner` taking >50% of runtime due to list allocations in `Min Max.py`.
 **Action:** Replace dynamic line generation and generalized `all()` checks with hardcoded array index comparisons. A simple O(1) manual comparison per line (`board[0][0] == board[1][1] == board[2][2]`) provides a ~3.7x speedup for the full Minimax pass.
+
+## 2024-05-18 - Short-Circuit Cost Calculation in TSP
+**Learning:** For permutation-based brute-force search algorithms (like TSP), generating full list structures like `[start] + list(perm) + [start]` creates high object allocation overhead. While `itertools.permutations` still generates all `N!` permutations, you can still significantly speed up the inner loop.
+**Action:** Utilize early short-circuiting directly over the iterator by continuously accumulating the cost and terminating calculation when `current_cost >= min_cost`. Avoid explicit path construction until a new minimum is verified. Ensure all edge weights are non-negative before activating the short-circuit logic.
