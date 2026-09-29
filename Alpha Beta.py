@@ -1,6 +1,7 @@
 def game_over(board):
     return winner(board) is not None or all(cell != ' ' for row in board for cell in row)
 
+
 def winner(board):
     lines = []
 
@@ -17,6 +18,7 @@ def winner(board):
             return line[0]
     return None
 
+
 def evaluate(board):
     w = winner(board)
     if w == 'X':
@@ -26,40 +28,39 @@ def evaluate(board):
     else:
         return 0   # Draw or game not finished
 
-def get_children(board, maximizing_player):
-    children = []
-    player = 'X' if maximizing_player else 'O'
-
-    for i in range(3):
-        for j in range(3):
-            if board[i][j] == ' ':
-                new_board = [row[:] for row in board]
-                new_board[i][j] = player
-                children.append(new_board)
-    return children
 
 def alphabeta(position, depth, alpha, beta, maximizing_player):
     if depth == 0 or game_over(position):
         return evaluate(position)
-    
+
+    player = 'X' if maximizing_player else 'O'
     if maximizing_player:
         max_eval = float('-inf')
-        for child in get_children(position, True):
-            eval = alphabeta(child, depth - 1, alpha, beta, False)
-            max_eval = max(max_eval, eval)
-            alpha = max(alpha, eval)
-            if beta <= alpha:
-                break  # Beta cutoff
+        for i in range(3):
+            for j in range(3):
+                if position[i][j] == ' ':
+                    position[i][j] = player
+                    eval = alphabeta(position, depth - 1, alpha, beta, False)
+                    position[i][j] = ' '
+                    max_eval = max(max_eval, eval)
+                    alpha = max(alpha, eval)
+                    if beta <= alpha:
+                        return max_eval  # Beta cutoff, early return
         return max_eval
     else:
         min_eval = float('inf')
-        for child in get_children(position, False):
-            eval = alphabeta(child, depth - 1, alpha, beta, True)
-            min_eval = min(min_eval, eval)
-            beta = min(beta, eval)
-            if beta <= alpha:
-                break  # Alpha cutoff
+        for i in range(3):
+            for j in range(3):
+                if position[i][j] == ' ':
+                    position[i][j] = player
+                    eval = alphabeta(position, depth - 1, alpha, beta, True)
+                    position[i][j] = ' '
+                    min_eval = min(min_eval, eval)
+                    beta = min(beta, eval)
+                    if beta <= alpha:
+                        return min_eval  # Alpha cutoff, early return
         return min_eval
+
 
 # Example usage
 initial_board = [
