@@ -1,13 +1,3 @@
-def game_over(board):
-    if winner(board) is not None:
-        return True
-    for row in board:
-        for cell in row:
-            if cell == ' ':
-                return False
-    return True
-
-
 def winner(board):
     # Rows
     for i in range(3):
@@ -25,44 +15,39 @@ def winner(board):
     return None
 
 
-def evaluate(board):
-    w = winner(board)
-    if w == 'X':
-        return 1   # Maximizing player wins
-    elif w == 'O':
-        return -1  # Minimizing player wins
-    else:
-        return 0   # Draw or game not finished
-
-
-def get_children(board, maximizing_player):
-    children = []
-    player = 'X' if maximizing_player else 'O'
-
-    for i in range(3):
-        for j in range(3):
-            if board[i][j] == ' ':
-                new_board = [row[:] for row in board]
-                new_board[i][j] = player
-                children.append(new_board)
-    return children
-
-
 def minimax(position, depth, maximizing_player):
-    if depth == 0 or game_over(position):
-        return evaluate(position)
+    w = winner(position)
+    if w == 'X':
+        return 1
+    elif w == 'O':
+        return -1
+
+    if depth == 0 or not (' ' in position[0] or ' ' in position[1] or ' ' in position[2]):
+        return 0
+
+    player = 'X' if maximizing_player else 'O'
 
     if maximizing_player:
         max_eval = float('-inf')
-        for child in get_children(position, True):
-            eval = minimax(child, depth - 1, False)
-            max_eval = max(max_eval, eval)
+        for i in range(3):
+            for j in range(3):
+                if position[i][j] == ' ':
+                    position[i][j] = player
+                    eval = minimax(position, depth - 1, False)
+                    position[i][j] = ' '
+                    if eval > max_eval:
+                        max_eval = eval
         return max_eval
     else:
         min_eval = float('inf')
-        for child in get_children(position, False):
-            eval = minimax(child, depth - 1, True)
-            min_eval = min(min_eval, eval)
+        for i in range(3):
+            for j in range(3):
+                if position[i][j] == ' ':
+                    position[i][j] = player
+                    eval = minimax(position, depth - 1, True)
+                    position[i][j] = ' '
+                    if eval < min_eval:
+                        min_eval = eval
         return min_eval
 
 
