@@ -1,23 +1,46 @@
 from itertools import permutations
 
+
 def traveling_salesman(graph, start):
     nodes = list(graph.keys())
     nodes.remove(start)
+
+    if not nodes:
+        return [start, start], graph[start][start]
+
     min_path = None
     min_cost = float('inf')
-    
+
+    # Verify non-negative weights for early pruning
+    can_prune = all(w >= 0 for u in graph for w in graph[u].values())
+
     for perm in permutations(nodes):
-        current_cost = 0
-        current_path = [start] + list(perm) + [start]
-        
-        for i in range(len(current_path) - 1):
-            current_cost += graph[current_path[i]][current_path[i+1]]
-        
+        # Optimization: Incrementally calculate metrics over the iterator
+        # and avoid constructing full array representations inside the loop
+        current_cost = graph[start][perm[0]]
+
+        if can_prune and current_cost >= min_cost:
+            continue
+
+        pruned = False
+        for i in range(len(perm) - 1):
+            current_cost += graph[perm[i]][perm[i+1]]
+            # Optimization: Early pruning
+            if can_prune and current_cost >= min_cost:
+                pruned = True
+                break
+
+        if pruned:
+            continue
+
+        current_cost += graph[perm[-1]][start]
+
         if current_cost < min_cost:
             min_cost = current_cost
-            min_path = current_path
-    
+            min_path = [start] + list(perm) + [start]
+
     return min_path, min_cost
+
 
 # Example usage:
 graph = {
