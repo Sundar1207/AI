@@ -2,9 +2,8 @@ def game_over(board):
     if winner(board) is not None:
         return True
     for row in board:
-        for cell in row:
-            if cell == ' ':
-                return False
+        if ' ' in row:
+            return False
     return True
 
 
@@ -35,34 +34,35 @@ def evaluate(board):
         return 0   # Draw or game not finished
 
 
-def get_children(board, maximizing_player):
-    children = []
-    player = 'X' if maximizing_player else 'O'
-
-    for i in range(3):
-        for j in range(3):
-            if board[i][j] == ' ':
-                new_board = [row[:] for row in board]
-                new_board[i][j] = player
-                children.append(new_board)
-    return children
-
-
 def minimax(position, depth, maximizing_player):
     if depth == 0 or game_over(position):
         return evaluate(position)
 
+    player = 'X' if maximizing_player else 'O'
+
     if maximizing_player:
         max_eval = float('-inf')
-        for child in get_children(position, True):
-            eval = minimax(child, depth - 1, False)
-            max_eval = max(max_eval, eval)
+        # Optimization: In-place grid modification to avoid deepcopy overhead
+        for i in range(3):
+            for j in range(3):
+                if position[i][j] == ' ':
+                    position[i][j] = player
+                    eval = minimax(position, depth - 1, False)
+                    position[i][j] = ' '
+                    if eval > max_eval:
+                        max_eval = eval
         return max_eval
     else:
         min_eval = float('inf')
-        for child in get_children(position, False):
-            eval = minimax(child, depth - 1, True)
-            min_eval = min(min_eval, eval)
+        # Optimization: In-place grid modification to avoid deepcopy overhead
+        for i in range(3):
+            for j in range(3):
+                if position[i][j] == ' ':
+                    position[i][j] = player
+                    eval = minimax(position, depth - 1, True)
+                    position[i][j] = ' '
+                    if eval < min_eval:
+                        min_eval = eval
         return min_eval
 
 
