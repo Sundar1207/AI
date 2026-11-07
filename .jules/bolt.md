@@ -1,3 +1,6 @@
 ## 2024-05-18 - Avoid Generalized List Comprehensions in Tic-Tac-Toe Minimax Heuristics
 **Learning:** For static grid evaluations (like 3x3 Tic-Tac-Toe) in highly recursive algorithms, generating lines dynamically using list comprehensions (`[[board[r][c] for r in range(3)] for c in range(3)]`) in leaf-node heuristics results in massive object allocation overhead and slows down search trees. Profiling showed `winner` taking >50% of runtime due to list allocations in `Min Max.py`.
 **Action:** Replace dynamic line generation and generalized `all()` checks with hardcoded array index comparisons. A simple O(1) manual comparison per line (`board[0][0] == board[1][1] == board[2][2]`) provides a ~3.7x speedup for the full Minimax pass.
+## 2024-05-18 - Branch and Bound Pruning for Traveling Salesman Problem
+**Learning:** For combinatorial optimization problems like TSP, generating all permutations (e.g., `itertools.permutations`) creates massive memory overhead and scales factorially. Profiling showed that the permutation generation and array conversions took significant time.
+**Action:** Replace `itertools.permutations` with DFS backtracking and branch-and-bound pruning. This completely avoids the memory allocation of path generation for pruned branches, achieving a ~13.4x speedup on a 10-node graph. Always verify edge weights are non-negative before pruning.
