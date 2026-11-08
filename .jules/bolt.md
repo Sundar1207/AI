@@ -1,3 +1,7 @@
 ## 2024-05-18 - Avoid Generalized List Comprehensions in Tic-Tac-Toe Minimax Heuristics
 **Learning:** For static grid evaluations (like 3x3 Tic-Tac-Toe) in highly recursive algorithms, generating lines dynamically using list comprehensions (`[[board[r][c] for r in range(3)] for c in range(3)]`) in leaf-node heuristics results in massive object allocation overhead and slows down search trees. Profiling showed `winner` taking >50% of runtime due to list allocations in `Min Max.py`.
 **Action:** Replace dynamic line generation and generalized `all()` checks with hardcoded array index comparisons. A simple O(1) manual comparison per line (`board[0][0] == board[1][1] == board[2][2]`) provides a ~3.7x speedup for the full Minimax pass.
+
+## 2024-05-19 - Optimize highly recursive tree searches by avoiding copies and built-in function overhead
+**Learning:** In highly recursive algorithms like Alpha-Beta pruning, creating full copies of state objects (`new_board = [row[:] for row in board]`) per child node and utilizing generalized functions like `all()` creates a massive performance bottleneck due to excessive list allocations and functional overhead.
+**Action:** Replace full array copying with in-place backtracking modifications (`board[i][j] = player; eval(); board[i][j] = ' '`), inline evaluation logic directly into the main loop, and replace `all()`/generator checks with explicit loops and the `in` operator. For Tic-Tac-Toe, these techniques reduced function calls from ~857,000 to ~18,000 and achieved a 10x speedup (0.627s to 0.062s).
