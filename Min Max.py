@@ -1,68 +1,62 @@
-def game_over(board):
-    if winner(board) is not None:
-        return True
-    for row in board:
-        for cell in row:
-            if cell == ' ':
-                return False
-    return True
-
-
-def winner(board):
+# Optimization: Inline evaluate and game_over to remove function overhead.
+# Optimization: Use in-place backtracking array updates instead of deep copying
+# arrays for each child state.
+def minimax(position, depth, maximizing_player):
+    # evaluate inlined
+    val = 0
     # Rows
     for i in range(3):
-        if board[i][0] != ' ' and board[i][0] == board[i][1] == board[i][2]:
-            return board[i][0]
-    # Columns
-    for j in range(3):
-        if board[0][j] != ' ' and board[0][j] == board[1][j] == board[2][j]:
-            return board[0][j]
-    # Diagonals
-    if board[0][0] != ' ' and board[0][0] == board[1][1] == board[2][2]:
-        return board[0][0]
-    if board[0][2] != ' ' and board[0][2] == board[1][1] == board[2][0]:
-        return board[0][2]
-    return None
-
-
-def evaluate(board):
-    w = winner(board)
-    if w == 'X':
-        return 1   # Maximizing player wins
-    elif w == 'O':
-        return -1  # Minimizing player wins
+        if position[i][0] != ' ' and position[i][0] == position[i][1] == position[i][2]:
+            val = 1 if position[i][0] == 'X' else -1
+            break
     else:
-        return 0   # Draw or game not finished
-
-
-def get_children(board, maximizing_player):
-    children = []
-    player = 'X' if maximizing_player else 'O'
-
-    for i in range(3):
+        # Columns
         for j in range(3):
-            if board[i][j] == ' ':
-                new_board = [row[:] for row in board]
-                new_board[i][j] = player
-                children.append(new_board)
-    return children
+            if position[0][j] != ' ' and position[0][j] == position[1][j] == position[2][j]:
+                val = 1 if position[0][j] == 'X' else -1
+                break
+        else:
+            # Diagonals
+            if position[0][0] != ' ' and position[0][0] == position[1][1] == position[2][2]:
+                val = 1 if position[0][0] == 'X' else -1
+            elif position[0][2] != ' ' and position[0][2] == position[1][1] == position[2][0]:
+                val = 1 if position[0][2] == 'X' else -1
 
+    if val != 0 or depth == 0:
+        return val
 
-def minimax(position, depth, maximizing_player):
-    if depth == 0 or game_over(position):
-        return evaluate(position)
+    game_over_bool = True
+    for row in position:
+        if ' ' in row:
+            game_over_bool = False
+            break
+
+    if game_over_bool:
+        return val
 
     if maximizing_player:
         max_eval = float('-inf')
-        for child in get_children(position, True):
-            eval = minimax(child, depth - 1, False)
-            max_eval = max(max_eval, eval)
+        player = 'X'
+        for i in range(3):
+            for j in range(3):
+                if position[i][j] == ' ':
+                    position[i][j] = player
+                    eval = minimax(position, depth - 1, False)
+                    position[i][j] = ' '
+                    if eval > max_eval:
+                        max_eval = eval
         return max_eval
     else:
         min_eval = float('inf')
-        for child in get_children(position, False):
-            eval = minimax(child, depth - 1, True)
-            min_eval = min(min_eval, eval)
+        player = 'O'
+        for i in range(3):
+            for j in range(3):
+                if position[i][j] == ' ':
+                    position[i][j] = player
+                    eval = minimax(position, depth - 1, True)
+                    position[i][j] = ' '
+                    if eval < min_eval:
+                        min_eval = eval
         return min_eval
 
 
