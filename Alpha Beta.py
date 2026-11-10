@@ -1,65 +1,54 @@
-def game_over(board):
-    return winner(board) is not None or all(cell != ' ' for row in board for cell in row)
-
-def winner(board):
-    lines = []
-
-    # Rows
-    lines.extend(board)
-    # Columns
-    lines.extend([[board[r][c] for r in range(3)] for c in range(3)])
-    # Diagonals
-    lines.append([board[i][i] for i in range(3)])
-    lines.append([board[i][2 - i] for i in range(3)])
-
-    for line in lines:
-        if line[0] != ' ' and all(cell == line[0] for cell in line):
-            return line[0]
-    return None
-
-def evaluate(board):
-    w = winner(board)
-    if w == 'X':
-        return 1   # Maximizing player wins
-    elif w == 'O':
-        return -1  # Minimizing player wins
-    else:
-        return 0   # Draw or game not finished
-
-def get_children(board, maximizing_player):
-    children = []
-    player = 'X' if maximizing_player else 'O'
-
-    for i in range(3):
-        for j in range(3):
-            if board[i][j] == ' ':
-                new_board = [row[:] for row in board]
-                new_board[i][j] = player
-                children.append(new_board)
-    return children
-
 def alphabeta(position, depth, alpha, beta, maximizing_player):
-    if depth == 0 or game_over(position):
-        return evaluate(position)
-    
+    # Inline game_over, winner, and evaluate check for performance
+    # Rows
+    for i in range(3):
+        if position[i][0] != ' ' and position[i][0] == position[i][1] == position[i][2]:
+            return 1 if position[i][0] == 'X' else -1
+    # Columns
+    for j in range(3):
+        if position[0][j] != ' ' and position[0][j] == position[1][j] == position[2][j]:
+            return 1 if position[0][j] == 'X' else -1
+    # Diagonals
+    if position[0][0] != ' ' and position[0][0] == position[1][1] == position[2][2]:
+        return 1 if position[0][0] == 'X' else -1
+    if position[0][2] != ' ' and position[0][2] == position[1][1] == position[2][0]:
+        return 1 if position[0][2] == 'X' else -1
+
+    # Check for empty cells directly
+    if depth == 0 or not (' ' in position[0] or ' ' in position[1] or ' ' in position[2]):
+        return 0
+
     if maximizing_player:
-        max_eval = float('-inf')
-        for child in get_children(position, True):
-            eval = alphabeta(child, depth - 1, alpha, beta, False)
-            max_eval = max(max_eval, eval)
-            alpha = max(alpha, eval)
-            if beta <= alpha:
-                break  # Beta cutoff
+        max_eval = -100
+        for i in range(3):
+            for j in range(3):
+                if position[i][j] == ' ':
+                    position[i][j] = 'X'
+                    eval_score = alphabeta(position, depth - 1, alpha, beta, False)
+                    position[i][j] = ' '
+                    if eval_score > max_eval:
+                        max_eval = eval_score
+                    if max_eval > alpha:
+                        alpha = max_eval
+                    if beta <= alpha:
+                        return max_eval
         return max_eval
     else:
-        min_eval = float('inf')
-        for child in get_children(position, False):
-            eval = alphabeta(child, depth - 1, alpha, beta, True)
-            min_eval = min(min_eval, eval)
-            beta = min(beta, eval)
-            if beta <= alpha:
-                break  # Alpha cutoff
+        min_eval = 100
+        for i in range(3):
+            for j in range(3):
+                if position[i][j] == ' ':
+                    position[i][j] = 'O'
+                    eval_score = alphabeta(position, depth - 1, alpha, beta, True)
+                    position[i][j] = ' '
+                    if eval_score < min_eval:
+                        min_eval = eval_score
+                    if min_eval < beta:
+                        beta = min_eval
+                    if beta <= alpha:
+                        return min_eval
         return min_eval
+
 
 # Example usage
 initial_board = [
